@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import Literal
+from typing import Literal, Optional
 from datetime import datetime
+from server.models.model import PropertyStatus
 
 class UserRegistrationRequest(BaseModel):
     name: str
@@ -40,3 +41,30 @@ class UserLoginRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+# Property Schemas
+class PropertyBase(BaseModel):
+    name: str
+    address: str
+    city: str
+    state: str
+    pincode: str
+    price: float
+    bedrooms: int
+    bathrooms: int
+    area_sqft: int
+    description: Optional[str] = None
+
+class PropertyCreate(PropertyBase):
+    pass
+
+class Property(PropertyBase):
+    id: int
+    owner_id: int
+    status: PropertyStatus
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    owner: UserResponse
+
+    class Config:
+        from_attributes = True

@@ -1,6 +1,7 @@
 import path_setup
 from fastapi import FastAPI
 from server.api.auth_routes import auth_router
+from server.api.property_routes import property_router
 from server.db.database import create_tables, test_connection
 from server.core.config import settings
 import logging
@@ -27,6 +28,7 @@ def on_startup():
 
 # Include routers
 app.include_router(auth_router)
+app.include_router(property_router)
 
 @app.get("/")
 def read_root():

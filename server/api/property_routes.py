@@ -1,0 +1,21 @@
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+from server.api.dependencies import get_current_user
+from server.db.database import get_db
+from server.schemas.schema import PropertyCreate, Property as PropertyResponse
+from server.services.property_service import PropertyService
+from server.models.model import User
+
+# Create router for property endpoints
+property_router = APIRouter(prefix="/properties", tags=["Properties"])
+
+@property_router.post("/", response_model=PropertyResponse, status_code=status.HTTP_201_CREATED)
+def create_property(
+    property_data: PropertyCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    List a new property.
+    """
+    return PropertyService.create_property(db=db, property_data=property_data, owner_id=current_user.id)
