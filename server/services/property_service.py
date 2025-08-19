@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 from server.models.model import User, UserType, Property
 from server.schemas.schema import PropertyCreate
 
@@ -26,3 +27,8 @@ class PropertyService:
         db.refresh(new_property)
 
         return new_property
+
+    @staticmethod
+    def get_all_properties(db: Session, skip: int = 0, limit: int = 100) -> List[Property]:
+        """Retrieve all properties with pagination."""
+        return db.query(Property).offset(skip).limit(limit).all()
