@@ -2,10 +2,10 @@ from datetime import datetime
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from database import get_db
-from model import User, UserType
-from schema import UserRegistrationRequest, UserRegistrationResponse, UserLoginRequest
-from security import get_password_hash, verify_password, create_access_token
+from server.db.database import get_db
+from server.models.model import User, UserType
+from server.schemas.schema import UserRegistrationRequest, UserRegistrationResponse, UserLoginRequest
+from server.core.security import get_password_hash, verify_password, create_access_token
 
 class AuthService:
     @staticmethod

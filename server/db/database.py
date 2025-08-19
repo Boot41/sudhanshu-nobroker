@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from config import db_config
+from server.core.config import settings
 import logging
 
 # Configure logging
@@ -10,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 # Create SQLAlchemy engine
 engine = create_engine(
-    db_config.get_database_url(),
-    pool_size=db_config.DB_POOL_SIZE,
-    max_overflow=db_config.DB_MAX_OVERFLOW,
-    echo=db_config.DEBUG if hasattr(db_config, 'DEBUG') else False
+    settings.DATABASE_URL,
+    pool_size=settings.DB_POOL_SIZE,
+    max_overflow=settings.DB_MAX_OVERFLOW,
+    echo=settings.DEBUG
 )
 
 # Create SessionLocal class

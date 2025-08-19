@@ -1,7 +1,8 @@
+import path_setup
 from fastapi import FastAPI
-from auth_routes import auth_router
-from database import create_tables, test_connection
-from config import app_config
+from server.api.auth_routes import auth_router
+from server.db.database import create_tables, test_connection
+from server.core.config import settings
 import logging
 
 # Configure logging
@@ -9,9 +10,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title=app_config.APP_NAME, 
-    description=app_config.APP_DESCRIPTION, 
-    version=app_config.APP_VERSION
+    title=settings.APP_NAME, 
+    description=settings.APP_DESCRIPTION, 
+    version=settings.APP_VERSION
 )
 
 @app.on_event("startup")
@@ -29,4 +30,4 @@ app.include_router(auth_router)
 
 @app.get("/")
 def read_root():
-    return {"message": f"Welcome to {app_config.APP_NAME}", "version": app_config.APP_VERSION}
+    return {"message": f"Welcome to {settings.APP_NAME}", "version": settings.APP_VERSION}

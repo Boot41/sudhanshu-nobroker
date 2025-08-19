@@ -11,7 +11,8 @@ dependencies = [
     "sqlalchemy",
     "psycopg2-binary",
     "alembic",
-    "passlib[bcrypt]",
+    "passlib",
+    "bcrypt",
     "python-jose[cryptography]",
     "pydantic-settings"
 ]

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum
 from sqlalchemy.sql import func
-from database import Base
+from server.db.database import Base
 import enum
 
 class UserType(enum.Enum):
