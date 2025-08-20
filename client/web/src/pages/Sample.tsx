@@ -17,6 +17,7 @@ import {
   Stack,
   Inline,
 } from "../ui";
+import SignUpForm from "../components/SignUpForm";
 
 const Section: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...rest }) => (
   <section
@@ -153,6 +154,17 @@ const Sample: React.FC = () => {
       </Section>
 
       <Divider />
+
+      <Section>
+        <Text as="h2" size="xl" weight={600}>
+          Sign Up Form
+        </Text>
+        <Card>
+          <div style={{ maxWidth: 520 }}>
+            <SignUpForm onSubmit={(vals) => console.log("signup submit", vals)} />
+          </div>
+        </Card>
+      </Section>
 
       <Section>
         <Text as="h2" size="xl" weight={600}>
