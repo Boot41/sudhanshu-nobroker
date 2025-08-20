@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Stack, Text, Button, Link as UILink, Divider } from "../ui";
+import { Stack, Text, Button, Link as UILink, Divider, toast } from "../ui";
+import { AuthAPI } from "../api";
 import SignUpForm, { type SignUpFormValues } from "./SignUpForm";
 import LoginForm, { type LoginFormValues } from "./LoginForm";
 
@@ -30,6 +31,51 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
   tagline = "Get rid of unreasonable brokerage, join us",
 }) => {
   const [mode, setMode] = useState<"default" | "signup" | "login">("default");
+  // Local state only used when external handlers are not provided
+  const [localSignupSubmitting, setLocalSignupSubmitting] = useState(false);
+  const [localLoginSubmitting, setLocalLoginSubmitting] = useState(false);
+  const [localSignupError, setLocalSignupError] = useState<string | undefined>(undefined);
+  const [localLoginError, setLocalLoginError] = useState<string | undefined>(undefined);
+
+  const handleSignupSubmit = async (vals: SignUpFormValues) => {
+    if (onSignupSubmit) return onSignupSubmit(vals);
+    try {
+      setLocalSignupError(undefined);
+      setLocalSignupSubmitting(true);
+      await AuthAPI.register({
+        name: vals.name,
+        email: vals.email,
+        phone: vals.phone,
+        password: vals.password,
+        user_type: vals.user_type,
+      });
+      toast.success("Account created successfully");
+      setMode("login");
+    } catch (e: any) {
+      setLocalSignupError(e?.message || "Unable to create account");
+    } finally {
+      setLocalSignupSubmitting(false);
+    }
+  };
+
+  const handleLoginSubmit = async (vals: LoginFormValues) => {
+    if (onLoginSubmit) return onLoginSubmit(vals);
+    try {
+      setLocalLoginError(undefined);
+      setLocalLoginSubmitting(true);
+      const token = await AuthAPI.login({
+        email: vals.email,
+        password: vals.password,
+      });
+      toast.success("Logged in successfully");
+      // TODO: persist token if needed (e.g., localStorage)
+      console.log("token", token);
+    } catch (e: any) {
+      setLocalLoginError(e?.message || "Login failed");
+    } finally {
+      setLocalLoginSubmitting(false);
+    }
+  };
 
   const goBack = () => setMode("default");
 
@@ -84,9 +130,9 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
             Create your account
           </Text>
           <SignUpForm
-            onSubmit={(vals) => onSignupSubmit ? onSignupSubmit(vals) : console.log("signup", vals)}
-            submitting={signupSubmitting}
-            error={signupError}
+            onSubmit={handleSignupSubmit}
+            submitting={onSignupSubmit ? signupSubmitting : localSignupSubmitting}
+            error={onSignupSubmit ? signupError : localSignupError}
           />
         </div>
       )}
@@ -97,9 +143,9 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
             Welcome back
           </Text>
           <LoginForm
-            onSubmit={(vals) => onLoginSubmit ? onLoginSubmit(vals) : console.log("login", vals)}
-            submitting={loginSubmitting}
-            error={loginError}
+            onSubmit={handleLoginSubmit}
+            submitting={onLoginSubmit ? loginSubmitting : localLoginSubmitting}
+            error={onLoginSubmit ? loginError : localLoginError}
           />
         </div>
       )}

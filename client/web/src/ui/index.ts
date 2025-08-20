@@ -115,3 +115,6 @@ export type { StackProps } from "./Stack";
 
 export { Inline } from "./Inline";
 export type { InlineProps } from "./Inline";
+
+// Utilities
+export { toast } from "./toast";

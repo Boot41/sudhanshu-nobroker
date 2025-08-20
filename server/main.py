@@ -1,5 +1,6 @@
 import path_setup
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from server.api.auth_routes import auth_router
 from server.api.property_routes import property_router
 from server.db.database import create_tables, test_connection
@@ -14,6 +15,20 @@ app = FastAPI(
     title=settings.APP_NAME, 
     description=settings.APP_DESCRIPTION, 
     version=settings.APP_VERSION
+)
+
+# CORS for local development (Vite dev server)
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.on_event("startup")
