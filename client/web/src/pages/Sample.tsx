@@ -20,6 +20,7 @@ import {
 import SignUpForm from "../components/SignUpForm";
 import LoginForm from "../components/LoginForm";
 import RegisterPanel from "../components/RegisterPanel";
+import DisplayCarousel from "../components/DisplayCarousel";
 
 const Section: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...rest }) => (
   <section
@@ -71,6 +72,16 @@ const Sample: React.FC = () => {
         UI Atoms Sample
       </Text>
       <Text color="neutral-600">A stateless page that renders all atoms and theme tokens.</Text>
+
+      <Section>
+        <Text as="h2" size="xl" weight={600}>
+          Display Carousel
+        </Text>
+        <DisplayCarousel />
+        <Text size="sm" color="neutral-600">
+          The marketing carousel auto-rotates through slides and spans full height. Controls are intentionally hidden.
+        </Text>
+      </Section>
 
       <Section>
         <Text as="h2" size="xl" weight={600}>
