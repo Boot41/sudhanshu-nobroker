@@ -25,6 +25,7 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     properties = relationship("Property", back_populates="owner")
+    applications = relationship("Application", back_populates="tenant")
     
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, user_type={self.user_type})>"
@@ -49,6 +50,28 @@ class Property(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     owner = relationship("User", back_populates="properties")
+    applications = relationship("Application", back_populates="property")
 
     def __repr__(self):
         return f"<Property(id={self.id}, name={self.name})>"
+
+class ApplicationStatus(enum.Enum):
+    SENT = "sent"
+    VIEWED = "viewed"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+
+class Application(Base):
+    __tablename__ = "applications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    property_id = Column(Integer, ForeignKey("properties.id"), nullable=False)
+    tenant_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    status = Column(Enum(ApplicationStatus, native_enum=False), nullable=False, default=ApplicationStatus.SENT)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    property = relationship("Property", back_populates="applications")
+    tenant = relationship("User", back_populates="applications")
+
+    def __repr__(self):
+        return f"<Application(id={self.id}, property_id={self.property_id}, tenant_id={self.tenant_id}, status={self.status})>"

@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from server.models.model import User, UserType, Property
-from server.schemas.schema import PropertyCreate, PropertyUpdate
+from server.models.model import User, UserType, Property, Application, ApplicationStatus
+from server.schemas.schema import PropertyCreate, PropertyUpdate, ApplicationUpdateRequest
 
 class PropertyService:
     @staticmethod
@@ -54,3 +54,52 @@ class PropertyService:
         db.commit()
         db.refresh(prop)
         return prop
+
+    @staticmethod
+    def manage_application(
+        db: Session,
+        application_id: int,
+        owner_id: int,
+        payload: ApplicationUpdateRequest,
+    ) -> Application:
+        """Allow property owners to update status of applications for their properties."""
+        application = db.query(Application).filter(Application.id == application_id).first()
+        if not application:
+            raise HTTPException(status_code=404, detail="Application not found")
+
+        # Ensure the application belongs to a property owned by the current user
+        prop = db.query(Property).filter(Property.id == application.property_id).first()
+        if not prop:
+            raise HTTPException(status_code=404, detail="Property not found for application")
+        if prop.owner_id != owner_id:
+            raise HTTPException(status_code=403, detail="You can manage applications only for your own properties")
+
+        # Only allow transitions to viewed/accepted/rejected
+        new_status_map = {
+            "viewed": ApplicationStatus.VIEWED,
+            "accepted": ApplicationStatus.ACCEPTED,
+            "rejected": ApplicationStatus.REJECTED,
+        }
+        application.status = new_status_map[payload.status]
+
+        db.add(application)
+        db.commit()
+        db.refresh(application)
+        return application
+
+    @staticmethod
+    def delete_property(db: Session, property_id: int, owner_id: int) -> int:
+        """Delete a property owned by the current user. Also clean up related applications."""
+        prop = db.query(Property).filter(Property.id == property_id).first()
+        if not prop:
+            raise HTTPException(status_code=404, detail="Property not found")
+        if prop.owner_id != owner_id:
+            raise HTTPException(status_code=403, detail="You can delete only your own properties")
+
+        # Delete related applications first (no cascade configured)
+        db.query(Application).filter(Application.property_id == property_id).delete(synchronize_session=False)
+
+        # Now delete the property
+        db.delete(prop)
+        db.commit()
+        return property_id

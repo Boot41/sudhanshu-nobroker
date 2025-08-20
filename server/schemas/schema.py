@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Literal, Optional
 from datetime import datetime
-from server.models.model import PropertyStatus
+from server.models.model import PropertyStatus, ApplicationStatus
 
 class UserRegistrationRequest(BaseModel):
     name: str
@@ -97,3 +97,22 @@ class PropertyUpdate(BaseModel):
     bathrooms: Optional[int] = None
     area_sqft: Optional[int] = None
     description: Optional[str] = None
+
+class PropertyDeleteResponse(BaseModel):
+    id: int
+    message: str
+
+# Application Schemas
+class ApplicationResponse(BaseModel):
+    id: int
+    property_id: int
+    tenant_id: int
+    status: ApplicationStatus
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ApplicationUpdateRequest(BaseModel):
+    # Owners can mark as viewed, accepted, or rejected
+    status: Literal["viewed", "accepted", "rejected"]
