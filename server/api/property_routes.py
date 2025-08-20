@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from server.api.dependencies import get_current_user
 from server.db.database import get_db
-from server.schemas.schema import PropertyCreate, Property as PropertyResponse
+from server.schemas.schema import PropertyCreate, PropertyUpdate, Property as PropertyResponse
 from server.services.property_service import PropertyService
 from server.models.model import User
 
@@ -31,3 +31,13 @@ def get_all_properties(
     Get a list of all available properties.
     """
     return PropertyService.get_all_properties(db=db, skip=skip, limit=limit)
+
+@property_router.put("/{property_id}", response_model=PropertyResponse)
+def update_property(
+    property_id: int,
+    updates: PropertyUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Update an existing property. Only the owner of the property may update it."""
+    return PropertyService.update_property(db=db, property_id=property_id, owner_id=current_user.id, updates=updates)

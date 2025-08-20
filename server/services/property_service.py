@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from server.models.model import User, UserType, Property
-from server.schemas.schema import PropertyCreate
+from server.schemas.schema import PropertyCreate, PropertyUpdate
 
 class PropertyService:
     @staticmethod
@@ -32,3 +32,25 @@ class PropertyService:
     def get_all_properties(db: Session, skip: int = 0, limit: int = 100) -> List[Property]:
         """Retrieve all properties with pagination."""
         return db.query(Property).offset(skip).limit(limit).all()
+
+    @staticmethod
+    def update_property(db: Session, property_id: int, owner_id: int, updates: PropertyUpdate) -> Property:
+        """Update an existing property if the current user is the owner."""
+        prop = db.query(Property).filter(Property.id == property_id).first()
+        if not prop:
+            raise HTTPException(status_code=404, detail="Property not found")
+
+        if prop.owner_id != owner_id:
+            raise HTTPException(status_code=403, detail="You can only update your own properties")
+
+        # Apply updates only for provided fields; ignore nulls
+        data = updates.dict(exclude_unset=True, exclude_none=True)
+        if not data:
+            raise HTTPException(status_code=400, detail="No fields provided to update")
+        for key, value in data.items():
+            setattr(prop, key, value)
+
+        db.add(prop)
+        db.commit()
+        db.refresh(prop)
+        return prop
