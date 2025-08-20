@@ -18,6 +18,8 @@ import {
   Inline,
 } from "../ui";
 import SignUpForm from "../components/SignUpForm";
+import LoginForm from "../components/LoginForm";
+import RegisterPanel from "../components/RegisterPanel";
 
 const Section: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...rest }) => (
   <section
@@ -69,6 +71,20 @@ const Sample: React.FC = () => {
         UI Atoms Sample
       </Text>
       <Text color="neutral-600">A stateless page that renders all atoms and theme tokens.</Text>
+
+      <Section>
+        <Text as="h2" size="xl" weight={600}>
+          Register Panel
+        </Text>
+        <div style={{ display: "flex", gap: 24 }}>
+          <RegisterPanel />
+          <div style={{ flex: 1 }}>
+            <Text size="md" color="neutral-700">
+              This area represents the rest of the page content next to the panel.
+            </Text>
+          </div>
+        </div>
+      </Section>
 
       <Section>
         <Text as="h2" size="xl" weight={600}>
@@ -162,6 +178,17 @@ const Sample: React.FC = () => {
         <Card>
           <div style={{ maxWidth: 520 }}>
             <SignUpForm onSubmit={(vals) => console.log("signup submit", vals)} />
+          </div>
+        </Card>
+      </Section>
+
+      <Section>
+        <Text as="h2" size="xl" weight={600}>
+          Login Form
+        </Text>
+        <Card>
+          <div style={{ maxWidth: 420 }}>
+            <LoginForm onSubmit={(vals) => console.log("login submit", vals)} />
           </div>
         </Card>
       </Section>
