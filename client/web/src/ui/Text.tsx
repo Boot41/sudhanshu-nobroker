@@ -1,6 +1,6 @@
 import React from "react";
 
-export type TextSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+export type TextSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 export type TextWeight = 300 | 400 | 500 | 600 | 700;
 export type TextColor =
   | "neutral-900"
@@ -25,6 +25,7 @@ const sizeMap: Record<TextSize, string> = {
   lg: "1.125rem",
   xl: "1.25rem",
   "2xl": "1.5rem",
+  "3xl": "1.875rem",
 };
 
 const colorMap: Record<TextColor, string> = {

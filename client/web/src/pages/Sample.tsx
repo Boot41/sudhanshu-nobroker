@@ -67,8 +67,8 @@ const ColorSwatch: React.FC<{ name: string; token: string }> = ({ name, token })
 
 const Sample: React.FC = () => {
   return (
-    <div style={{ padding: "var(--spacing-3xl)", fontFamily: "var(--font-sans)", color: "var(--color-neutral-900)" }}>
-      <Text as="h1" size="2xl" weight={600}>
+    <div style={{ padding: "var(--spacing-3xl)", fontFamily: "var(--font-sans)", color: "var(--color-neutral-900)", background: "var(--color-neutral-50)" }}>
+      <Text as="h1" size="3xl" weight={600}>
         UI Atoms Sample
       </Text>
       <Text color="neutral-600">A stateless page that renders all atoms and theme tokens.</Text>

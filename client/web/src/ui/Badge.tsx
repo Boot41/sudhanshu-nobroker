@@ -30,9 +30,11 @@ export const Badge: React.FC<BadgeProps> = ({ variant = "neutral", style, childr
     alignItems: "center",
     fontFamily: "var(--font-sans)",
     fontSize: "0.75rem",
-    padding: `var(--spacing-xs) var(--spacing-sm)`,
+    fontWeight: 600,
+    padding: `calc(var(--spacing-xs) + 1px) var(--spacing-sm)`,
     borderRadius: 999,
     gap: "var(--spacing-xs)",
+    lineHeight: 1.1,
   };
 
   return (

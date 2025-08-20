@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -16,6 +16,7 @@ export const Input: React.FC<InputProps> = ({
   id,
   ...rest
 }) => {
+  const [focused, setFocused] = useState(false);
   const inputId = id || rest.name || `input-${Math.random().toString(36).slice(2, 7)}`;
 
   const labelStyle: React.CSSProperties = {
@@ -32,11 +33,11 @@ export const Input: React.FC<InputProps> = ({
     fontSize: "1rem",
     color: "var(--color-neutral-900)",
     background: "var(--color-neutral-50)",
-    border: `1px solid ${error ? "var(--color-primary-600)" : "var(--color-neutral-300)"}`,
+    border: `1px solid ${error ? "var(--color-primary-600)" : focused ? "var(--color-primary-600)" : "var(--color-neutral-300)"}`,
     borderRadius: 6,
     padding: `var(--spacing-md) var(--spacing-lg)`,
     outline: "none",
-    boxShadow: "none",
+    boxShadow: focused ? "0 0 0 3px rgba(225,29,72,0.15)" : "none",
   };
 
   const helperStyle: React.CSSProperties = {
@@ -53,7 +54,19 @@ export const Input: React.FC<InputProps> = ({
           {label}
         </label>
       )}
-      <input id={inputId} style={{ ...inputStyle, ...style }} {...rest} />
+      <input
+        id={inputId}
+        style={{ ...inputStyle, ...style }}
+        onFocus={(e) => {
+          setFocused(true);
+          rest.onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          rest.onBlur?.(e);
+        }}
+        {...rest}
+      />
       {(helperText || error) && (
         <div style={helperStyle}>{error ? error : helperText}</div>
       )}

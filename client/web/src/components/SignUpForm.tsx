@@ -143,13 +143,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         </div>
 
         {error ? (
-          <Text size="sm" color="primary-600">
+          <Text size="sm" color="primary-600" style={{ marginTop: "var(--spacing-xs)" }}>
             {error}
           </Text>
         ) : null}
 
         <div>
-          <Button type="submit" variant="primary" disabled={submitting}>
+          <Button type="submit" variant="primary" disabled={submitting} fullWidth>
             {submitting ? "Creating account..." : "Create account"}
           </Button>
         </div>

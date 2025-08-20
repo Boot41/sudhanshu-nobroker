@@ -3,12 +3,15 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Sample from './pages/Sample'
+import Home from './pages/Home'
 
 function App() {
   const [count, setCount] = useState(0)
 
-  if (typeof window !== 'undefined' && window.location && window.location.pathname === '/sample') {
-    return <Sample />
+  if (typeof window !== 'undefined' && window.location) {
+    const path = window.location.pathname
+    if (path === '/home') return <Home />
+    if (path === '/sample') return <Sample />
   }
 
   return (
@@ -23,6 +26,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <p style={{ marginBottom: 12 }}>
+        <a href="/home" style={{ marginRight: 16 }}>Open Home page →</a>
         <a href="/sample">Open UI Atoms Sample page →</a>
       </p>
       <div className="card">

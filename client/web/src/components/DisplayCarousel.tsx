@@ -79,15 +79,28 @@ const DisplayCarousel: React.FC<DisplayCarouselProps> = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div style={{ width: "min(900px, 100%)" }}>
+      {/* Soft overlay to enhance text contrast over backgrounds */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(0deg, rgba(17,24,39,0.18), rgba(17,24,39,0.18))",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ width: "min(1040px, 100%)", position: "relative", zIndex: 1 }}>
         <Stack gap="2xl">
           <Badge variant={current.accent === "secondary" ? "secondary" : "primary"}>
             {current.accent === "secondary" ? "For Owners" : "For Everyone"}
           </Badge>
 
-          <Text as="h2" size="2xl" weight={700}>
+          <Text as="h2" size="3xl" weight={700}>
             {current.title}
           </Text>
 

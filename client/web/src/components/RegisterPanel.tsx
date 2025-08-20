@@ -35,11 +35,12 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
 
   const containerStyle: React.CSSProperties = {
     width: "25%",
-    minWidth: 280,
+    minWidth: 320,
     height: "100vh",
-    padding: "var(--spacing-xl)",
+    padding: "var(--spacing-2xl)",
     boxSizing: "border-box",
     borderRight: "1px solid var(--color-neutral-200)",
+    background: "var(--color-neutral-50)",
     overflowY: "auto",
   };
 
@@ -59,7 +60,7 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
             <Text as="h1" size="2xl" weight={700}>
               {title}
             </Text>
-            <Text as="p" size="md" color="neutral-700">
+            <Text as="p" size="md" color="neutral-700" style={{ marginTop: "var(--spacing-sm)", lineHeight: 1.5 }}>
               {tagline}
             </Text>
           </div>
@@ -79,7 +80,7 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
 
       {mode === "signup" && (
         <div>
-          <Text as="h2" size="xl" weight={600} style={{ marginBottom: "var(--spacing-md)" }}>
+          <Text as="h2" size="xl" weight={600} style={{ marginBottom: "var(--spacing-lg)" }}>
             Create your account
           </Text>
           <SignUpForm
@@ -92,7 +93,7 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
 
       {mode === "login" && (
         <div>
-          <Text as="h2" size="xl" weight={600} style={{ marginBottom: "var(--spacing-md)" }}>
+          <Text as="h2" size="xl" weight={600} style={{ marginBottom: "var(--spacing-lg)" }}>
             Welcome back
           </Text>
           <LoginForm
