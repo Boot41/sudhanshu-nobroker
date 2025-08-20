@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Stack, Text, Button, Link as UILink, Divider, toast } from "../ui";
-import { AuthAPI } from "../api";
+import { authStore } from "../store/authstore";
 import SignUpForm, { type SignUpFormValues } from "./SignUpForm";
 import LoginForm, { type LoginFormValues } from "./LoginForm";
 
@@ -42,7 +42,7 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
     try {
       setLocalSignupError(undefined);
       setLocalSignupSubmitting(true);
-      await AuthAPI.register({
+      await authStore.register({
         name: vals.name,
         email: vals.email,
         phone: vals.phone,
@@ -63,7 +63,7 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
     try {
       setLocalLoginError(undefined);
       setLocalLoginSubmitting(true);
-      const token = await AuthAPI.login({
+      const token = await authStore.login({
         email: vals.email,
         password: vals.password,
       });
