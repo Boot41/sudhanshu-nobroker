@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status
+import re
 from sqlalchemy.orm import Session
 from typing import List
 from server.api.dependencies import get_current_user
@@ -12,6 +13,7 @@ from server.schemas.schema import (
     ApplicationCreateRequest,
     PropertySearchQuery,
     PropertyDeleteResponse,
+    PropertyPublic,
 )
 from server.services.property_service import PropertyService
 from server.models.model import User
@@ -32,7 +34,7 @@ def create_property(
     """
     return PropertyService.create_property(db=db, property_data=property_data, owner_id=current_user.id)
 
-@property_router.get("/", response_model=List[PropertyResponse])
+@property_router.get("/", response_model=List[PropertyPublic])
 def search_properties(
     filters: PropertySearchQuery = Depends(),
     db: Session = Depends(get_db),
@@ -43,12 +45,56 @@ def search_properties(
     - max_price: list properties with price <= max_price
     Supports pagination via skip & limit. Public endpoint; no auth required.
     """
-    return PropertyService.search_properties(
+    props = PropertyService.search_properties(
         db=db,
         city=filters.city,
         max_price=filters.max_price,
         skip=filters.skip,
         limit=filters.limit,
+    )
+
+    def mask_address(addr: str) -> str:
+        # Replace digits with 'x' to hide house numbers/apartment numbers
+        return re.sub(r"\d", "x", addr)
+
+    return [
+        PropertyPublic(
+            name=p.name,
+            address=mask_address(p.address or ""),
+            city=p.city,
+            state=p.state,
+            pincode=p.pincode,
+            price=p.price,
+            bedrooms=p.bedrooms,
+            bathrooms=p.bathrooms,
+            area_sqft=p.area_sqft,
+            description=p.description,
+        )
+        for p in props
+    ]
+
+@property_router.get("/{property_id}", response_model=PropertyPublic)
+def get_property_details(
+    property_id: int,
+    db: Session = Depends(get_db),
+):
+    """Get all the information about a single property (public-safe)."""
+    p = PropertyService.get_property_by_id(db=db, property_id=property_id)
+
+    def mask_address(addr: str) -> str:
+        return re.sub(r"\d", "x", addr)
+
+    return PropertyPublic(
+        name=p.name,
+        address=mask_address(p.address or ""),
+        city=p.city,
+        state=p.state,
+        pincode=p.pincode,
+        price=p.price,
+        bedrooms=p.bedrooms,
+        bathrooms=p.bathrooms,
+        area_sqft=p.area_sqft,
+        description=p.description,
     )
 
 @property_router.put("/{property_id}", response_model=PropertyResponse)

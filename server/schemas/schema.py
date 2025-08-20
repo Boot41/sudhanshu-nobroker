@@ -74,7 +74,7 @@ class PropertyBase(BaseModel):
 class PropertyCreate(PropertyBase):
     pass
 
-class Property(PropertyBase):
+class Property(BaseModel):
     id: int
     owner_id: int
     status: PropertyStatus
@@ -108,6 +108,19 @@ class PropertySearchQuery(BaseModel):
 class PropertyDeleteResponse(BaseModel):
     id: int
     message: str
+
+class PropertyPublic(BaseModel):
+    # Public-safe property details
+    name: str
+    address: str  # should be masked by the service before returning
+    city: str
+    state: str
+    pincode: str
+    price: float
+    bedrooms: int
+    bathrooms: int
+    area_sqft: int
+    description: Optional[str] = None
 
 # Application Schemas
 class ApplicationResponse(BaseModel):

@@ -50,6 +50,14 @@ class PropertyService:
         return query.offset(skip).limit(limit).all()
 
     @staticmethod
+    def get_property_by_id(db: Session, property_id: int) -> Property:
+        """Fetch a single property by ID or return 404 if not found."""
+        prop = db.query(Property).filter(Property.id == property_id).first()
+        if not prop:
+            raise HTTPException(status_code=404, detail="Property not found")
+        return prop
+
+    @staticmethod
     def update_property(db: Session, property_id: int, owner_id: int, updates: PropertyUpdate) -> Property:
         """Update an existing property if the current user is the owner."""
         prop = db.query(Property).filter(Property.id == property_id).first()
