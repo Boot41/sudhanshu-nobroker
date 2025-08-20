@@ -34,6 +34,22 @@ class PropertyService:
         return db.query(Property).offset(skip).limit(limit).all()
 
     @staticmethod
+    def search_properties(
+        db: Session,
+        city: str | None = None,
+        max_price: float | None = None,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> List[Property]:
+        """Search properties optionally filtering by city and max_price with pagination."""
+        query = db.query(Property)
+        if city:
+            query = query.filter(Property.city.ilike(f"%{city}%"))
+        if max_price is not None:
+            query = query.filter(Property.price <= max_price)
+        return query.offset(skip).limit(limit).all()
+
+    @staticmethod
     def update_property(db: Session, property_id: int, owner_id: int, updates: PropertyUpdate) -> Property:
         """Update an existing property if the current user is the owner."""
         prop = db.query(Property).filter(Property.id == property_id).first()

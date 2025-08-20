@@ -9,10 +9,13 @@ from server.schemas.schema import (
     Property as PropertyResponse,
     ApplicationUpdateRequest,
     ApplicationResponse,
+    ApplicationCreateRequest,
+    PropertySearchQuery,
     PropertyDeleteResponse,
 )
 from server.services.property_service import PropertyService
 from server.models.model import User
+from server.services.tenant_service import TenantService
 
 # Create router for property endpoints
 property_router = APIRouter(prefix="/properties", tags=["Properties"])
@@ -30,15 +33,23 @@ def create_property(
     return PropertyService.create_property(db=db, property_data=property_data, owner_id=current_user.id)
 
 @property_router.get("/", response_model=List[PropertyResponse])
-def get_all_properties(
+def search_properties(
+    filters: PropertySearchQuery = Depends(),
     db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100
 ):
     """
-    Get a list of all available properties.
+    Search properties. Optional filters:
+    - city: filter by city (case-insensitive, partial match)
+    - max_price: list properties with price <= max_price
+    Supports pagination via skip & limit. Public endpoint; no auth required.
     """
-    return PropertyService.get_all_properties(db=db, skip=skip, limit=limit)
+    return PropertyService.search_properties(
+        db=db,
+        city=filters.city,
+        max_price=filters.max_price,
+        skip=filters.skip,
+        limit=filters.limit,
+    )
 
 @property_router.put("/{property_id}", response_model=PropertyResponse)
 def update_property(
@@ -64,6 +75,23 @@ def manage_application(
         owner_id=current_user.id,
         payload=payload,
     )
+
+@application_router.post("/", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
+def apply_for_property(
+    payload: ApplicationCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Tenants can submit an application to rent a property."""
+    return TenantService.apply_for_property(db=db, tenant_id=current_user.id, property_id=payload.property_id)
+
+@application_router.get("/", response_model=List[ApplicationResponse])
+def get_my_applications(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Tenants can see the status of their applications."""
+    return TenantService.get_my_applications(db=db, tenant_id=current_user.id)
 
 @property_router.delete("/{property_id}", response_model=PropertyDeleteResponse)
 def delete_property(

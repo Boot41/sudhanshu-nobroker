@@ -98,6 +98,13 @@ class PropertyUpdate(BaseModel):
     area_sqft: Optional[int] = None
     description: Optional[str] = None
 
+class PropertySearchQuery(BaseModel):
+    # Optional filters for GET /properties
+    city: Optional[str] = None
+    max_price: Optional[float] = None
+    skip: int = 0
+    limit: int = 100
+
 class PropertyDeleteResponse(BaseModel):
     id: int
     message: str
@@ -116,6 +123,10 @@ class ApplicationResponse(BaseModel):
 class ApplicationUpdateRequest(BaseModel):
     # Owners can mark as viewed, accepted, or rejected
     status: Literal["viewed", "accepted", "rejected"]
+
+class ApplicationCreateRequest(BaseModel):
+    # Tenants apply to a property
+    property_id: int
 
 # Shortlist Schemas
 class ShortlistRequest(BaseModel):
