@@ -26,6 +26,7 @@ class User(Base):
 
     properties = relationship("Property", back_populates="owner")
     applications = relationship("Application", back_populates="tenant")
+    shortlisted_properties = relationship("ShortlistedProperty", back_populates="user")
     
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, user_type={self.user_type})>"
@@ -51,6 +52,7 @@ class Property(Base):
 
     owner = relationship("User", back_populates="properties")
     applications = relationship("Application", back_populates="property")
+    shortlisted_by = relationship("ShortlistedProperty", back_populates="property")
 
     def __repr__(self):
         return f"<Property(id={self.id}, name={self.name})>"
@@ -75,3 +77,17 @@ class Application(Base):
 
     def __repr__(self):
         return f"<Application(id={self.id}, property_id={self.property_id}, tenant_id={self.tenant_id}, status={self.status})>"
+
+class ShortlistedProperty(Base):
+    __tablename__ = "shortlisted_properties"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    property_id = Column(Integer, ForeignKey("properties.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="shortlisted_properties")
+    property = relationship("Property", back_populates="shortlisted_by")
+
+    def __repr__(self):
+        return f"<ShortlistedProperty(user_id={self.user_id}, property_id={self.property_id})>"

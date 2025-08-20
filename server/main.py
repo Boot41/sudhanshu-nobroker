@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from server.api.auth_routes import auth_router
 from server.api.property_routes import property_router, application_router
 from server.api.registereduser_routes import router as registereduser_router
+from server.api.tenant_routes import router as tenant_router
 from server.db.database import create_tables, test_connection
 from server.core.config import settings
 import logging
@@ -47,6 +48,7 @@ app.include_router(auth_router)
 app.include_router(property_router)
 app.include_router(application_router)
 app.include_router(registereduser_router)
+app.include_router(tenant_router)
 
 @app.get("/")
 def read_root():
