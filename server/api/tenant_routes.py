@@ -23,3 +23,12 @@ def get_shortlist(
     db: Session = Depends(get_db),
 ):
     return TenantService.get_shortlisted_properties(db=db, tenant_id=current_user.id)
+
+@router.delete("/shortlist/{property_id}", status_code=204)
+def remove_from_shortlist(
+    property_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    TenantService.remove_shortlisted_property(db=db, tenant_id=current_user.id, property_id=property_id)
+    return None

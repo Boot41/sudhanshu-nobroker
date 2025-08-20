@@ -51,3 +51,27 @@ class TenantService:
             .all()
         )
         return shortlist_entries
+
+    @staticmethod
+    def remove_shortlisted_property(db: Session, tenant_id: int, property_id: int) -> None:
+        # Validate user is tenant
+        tenant = db.query(User).filter(User.id == tenant_id).first()
+        if not tenant or tenant.user_type != UserType.TENANT:
+            raise HTTPException(status_code=403, detail="Only tenants can modify their shortlist")
+
+        # Find shortlist entry
+        entry = (
+            db.query(ShortlistedProperty)
+            .filter(
+                ShortlistedProperty.user_id == tenant_id,
+                ShortlistedProperty.property_id == property_id,
+            )
+            .first()
+        )
+
+        if not entry:
+            raise HTTPException(status_code=404, detail="Shortlisted property not found")
+
+        db.delete(entry)
+        db.commit()
+        return None
