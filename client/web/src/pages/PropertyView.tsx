@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AppShell, Stack, Text, Spinner, Button, Inline } from "../ui";
 import OwnerSidebar from "../components/owner/OwnerSidebar";
 import type { OwnerTab } from "../components/owner/OwnerSidebar";
@@ -13,6 +13,7 @@ const PropertyView: React.FC = () => {
   const [ready, setReady] = useState(false);
   const [id, setId] = useState<number | null>(null);
   const [detail, setDetail] = useState(propertyStore.getState().current || null);
+  const userClicked = useRef(false);
 
   // Parse id from path and auth guard
   useEffect(() => {
@@ -59,8 +60,14 @@ const PropertyView: React.FC = () => {
       });
   }, [ready, id]);
 
-  // Sidebar actions consistency
+  // Sidebar actions: do not trigger on initial mount
+  const didMount = useRef(false);
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    if (!userClicked.current) return; // only navigate when user explicitly clicked sidebar
     if (tab === "logout") {
       (async () => {
         await authStore.logoutAsync();
@@ -69,12 +76,13 @@ const PropertyView: React.FC = () => {
     } else if (tab === "properties") {
       if (typeof window !== "undefined") window.location.assign("/owner");
     }
+    userClicked.current = false; // reset after handling
   }, [tab]);
 
   // keep detail from local state synced via subscription
 
   return (
-    <AppShell sidebar={<OwnerSidebar selected={tab} onSelect={setTab} />}>
+    <AppShell sidebar={<OwnerSidebar selected={tab} onSelect={(t) => { userClicked.current = true; setTab(t); }} />}>
       <Stack gap="lg">
         <Inline align="center" style={{ justifyContent: "space-between" }}>
           <Stack gap="xs">
