@@ -12,6 +12,8 @@ export interface DisplayCarouselProps {
   slides?: DisplayCarouselSlide[];
   autoAdvanceMs?: number;
   height?: number | string;
+  width?: number | string;
+  padding?: number | string;
   onSlideChange?: (index: number) => void;
 }
 
@@ -23,6 +25,8 @@ const DisplayCarousel: React.FC<DisplayCarouselProps> = ({
   slides,
   autoAdvanceMs = 5000,
   height = "100vh",
+  width = "75%",
+  padding = "var(--spacing-3xl)",
   onSlideChange,
 }) => {
   const data = useMemo<DisplayCarouselSlide[]>(
@@ -70,10 +74,10 @@ const DisplayCarousel: React.FC<DisplayCarouselProps> = ({
   return (
     <section
       style={{
-        width: "75%",
+        width,
         height,
         boxSizing: "border-box",
-        padding: "var(--spacing-3xl)",
+        padding,
         background: current.background ?? "var(--color-neutral-50)",
         color: "var(--color-neutral-900)",
         display: "flex",
@@ -94,7 +98,7 @@ const DisplayCarousel: React.FC<DisplayCarouselProps> = ({
         }}
       />
 
-      <div style={{ width: "min(1040px, 100%)", position: "relative", zIndex: 1 }}>
+      <div style={{ width: "100%", position: "relative", zIndex: 1 }}>
         <Stack gap="2xl">
           <Badge variant={current.accent === "secondary" ? "secondary" : "primary"}>
             {current.accent === "secondary" ? "For Owners" : "For Everyone"}

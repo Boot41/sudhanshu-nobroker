@@ -15,7 +15,7 @@ export const AppShell: React.FC<AppShellProps> = ({ sidebar, children }) => {
   return (
     <div style={base}>
       {sidebar}
-      <main style={{ padding: 20 }}>{children}</main>
+      <main style={{ padding: 0, width: "100%" }}>{children}</main>
     </div>
   );
 };

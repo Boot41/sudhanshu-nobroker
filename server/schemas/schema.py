@@ -102,6 +102,8 @@ class PropertySearchQuery(BaseModel):
     # Optional filters for GET /properties
     city: Optional[str] = None
     max_price: Optional[float] = None
+    min_bedrooms: Optional[int] = None
+    min_area: Optional[int] = None
     skip: int = 0
     limit: int = 100
 

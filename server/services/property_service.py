@@ -49,15 +49,21 @@ class PropertyService:
         db: Session,
         city: str | None = None,
         max_price: float | None = None,
+        min_bedrooms: int | None = None,
+        min_area: int | None = None,
         skip: int = 0,
         limit: int = 100,
     ) -> List[Property]:
-        """Search properties optionally filtering by city and max_price with pagination."""
+        """Search properties with optional filters: city (ilike), price <= max_price, bedrooms >= min_bedrooms, area_sqft >= min_area with pagination."""
         query = db.query(Property)
         if city:
             query = query.filter(Property.city.ilike(f"%{city}%"))
         if max_price is not None:
             query = query.filter(Property.price <= max_price)
+        if min_bedrooms is not None:
+            query = query.filter(Property.bedrooms >= min_bedrooms)
+        if min_area is not None:
+            query = query.filter(Property.area_sqft >= min_area)
         return query.offset(skip).limit(limit).all()
 
     @staticmethod

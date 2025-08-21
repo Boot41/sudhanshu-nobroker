@@ -4,6 +4,7 @@ import OwnerSidebar from "../components/owner/OwnerSidebar";
 import type { OwnerTab } from "../components/owner/OwnerSidebar";
 import PropertiesSummary from "../components/owner/PropertiesSummary";
 import PropertiesGrid from "../components/owner/PropertiesGrid";
+import PropertiesFilter, { type PropertiesFilterValue } from "../components/owner/PropertiesFilter";
 import type { Property } from "../components/owner/PropertyCard";
 import { propertyStore } from "../store/propertystore";
 import { useEffect } from "react";
@@ -13,6 +14,7 @@ const OwnerDashboard: React.FC = () => {
   const [tab, setTab] = useState<OwnerTab>("properties");
   const [myProps, setMyProps] = useState<Property[]>([]);
   const [publicProps, setPublicProps] = useState<Property[]>([]);
+  const [filters, setFilters] = useState<PropertiesFilterValue | null>(null);
 
   // Auth guard: redirect to /home if not authenticated
   useEffect(() => {
@@ -37,6 +39,16 @@ const OwnerDashboard: React.FC = () => {
   // In future, we can switch views by tab. For now, dashboard layout is as specified.
   const allProps: Property[] = publicProps;
 
+  const applyFilters = async (v: PropertiesFilterValue) => {
+    setFilters(v && (Object.keys(v).length > 0 ? v : null));
+    await propertyStore.fetchPublic(v);
+  };
+
+  const clearFilters = async () => {
+    setFilters(null);
+    await propertyStore.fetchPublic();
+  };
+
   // Handle logout tab selection
   useEffect(() => {
     if (tab === "logout") {
@@ -58,8 +70,11 @@ const OwnerDashboard: React.FC = () => {
         {/* Top section: My properties or empty state */}
         <PropertiesSummary properties={myProps} />
 
+        {/* Search Filter between My and All */}
+        <PropertiesFilter value={filters || undefined} onApply={applyFilters} onClear={clearFilters} />
+
         {/* Bottom section: All listed properties */}
-        <PropertiesGrid title="All Listed Properties" properties={allProps} />
+        <PropertiesGrid title={filters ? "Filtered Properties" : "All Listed Properties"} properties={allProps} />
       </Stack>
     </AppShell>
   );

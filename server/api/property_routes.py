@@ -45,12 +45,16 @@ def search_properties(
     Search properties. Optional filters:
     - city: filter by city (case-insensitive, partial match)
     - max_price: list properties with price <= max_price
+    - min_bedrooms: properties with bedrooms >= this value
+    - min_area: properties with area_sqft >= this value
     Supports pagination via skip & limit. Public endpoint; no auth required.
     """
     props = PropertyService.search_properties(
         db=db,
         city=filters.city,
         max_price=filters.max_price,
+        min_bedrooms=filters.min_bedrooms,
+        min_area=filters.min_area,
         skip=filters.skip,
         limit=filters.limit,
     )

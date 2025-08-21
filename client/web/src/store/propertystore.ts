@@ -77,7 +77,7 @@ class PropertyStore {
     }
   }
 
-  async fetchPublic(params?: { city?: string; max_price?: number; skip?: number; limit?: number }): Promise<PropertyPublicItem[]> {
+  async fetchPublic(params?: { city?: string; max_price?: number; min_bedrooms?: number; min_area?: number; skip?: number; limit?: number }): Promise<PropertyPublicItem[]> {
     try {
       this.set({ loadingPublic: true, errorPublic: null });
       const list = await PropertyAPI.listPublic(params);

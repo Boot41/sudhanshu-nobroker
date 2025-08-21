@@ -170,10 +170,12 @@ export const PropertyAPI = {
       body: JSON.stringify(payload),
     }),
   listMine: () => authorizedRequest<PropertyOwnerItem[]>("/properties/mine", { method: "GET" }),
-  listPublic: (params?: { city?: string; max_price?: number; skip?: number; limit?: number }) => {
+  listPublic: (params?: { city?: string; max_price?: number; min_bedrooms?: number; min_area?: number; skip?: number; limit?: number }) => {
     const sp = new URLSearchParams();
     if (params?.city) sp.set("city", params.city);
     if (typeof params?.max_price === "number") sp.set("max_price", String(params.max_price));
+    if (typeof params?.min_bedrooms === "number") sp.set("min_bedrooms", String(params.min_bedrooms));
+    if (typeof params?.min_area === "number") sp.set("min_area", String(params.min_area));
     if (typeof params?.skip === "number") sp.set("skip", String(params.skip));
     if (typeof params?.limit === "number") sp.set("limit", String(params.limit));
     const q = sp.toString();
