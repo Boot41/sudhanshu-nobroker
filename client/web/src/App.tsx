@@ -2,8 +2,11 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import Sample from './pages/Sample'
-import Home from './pages/Home'
+import Sample from './pages/Sample.tsx'
+import Home from './pages/Home.tsx'
+import OwnerDashboard from './pages/OwnerDashboard.tsx'
+import PostProperty from './pages/PostProperty.tsx'
+import PropertyView from './pages/PropertyView.tsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -12,6 +15,9 @@ function App() {
     const path = window.location.pathname
     if (path === '/home') return <Home />
     if (path === '/sample') return <Sample />
+    if (path === '/owner') return <OwnerDashboard />
+    if (path === '/owner/post') return <PostProperty />
+    if (path.startsWith('/owner/property/')) return <PropertyView />
   }
 
   return (
@@ -27,7 +33,8 @@ function App() {
       <h1>Vite + React</h1>
       <p style={{ marginBottom: 12 }}>
         <a href="/home" style={{ marginRight: 16 }}>Open Home page →</a>
-        <a href="/sample">Open UI Atoms Sample page →</a>
+        <a href="/sample" style={{ marginRight: 16 }}>Open UI Atoms Sample page →</a>
+        <a href="/owner">Open Owner Dashboard →</a>
       </p>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>

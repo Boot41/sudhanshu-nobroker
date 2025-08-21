@@ -11,6 +11,24 @@ export interface RegisterPayload {
   user_type: "tenant" | "owner";
 }
 
+export interface PropertyOwnerDetail {
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  area_sqft: number;
+  description?: string | null;
+  status: string;
+  owner_id: number;
+  created_at: string;
+  updated_at?: string | null;
+}
+
 export interface RegisterResponse {
   id: number | string;
   name: string;
@@ -50,6 +68,21 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   return data as T;
 }
 
+// Authorized request automatically includes Bearer token if available
+async function authorizedRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as any),
+  };
+  try {
+    const token = localStorage.getItem("auth.token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  } catch {
+    // ignore storage issues
+  }
+  return request<T>(path, { ...options, headers });
+}
+
 export const AuthAPI = {
   register: (payload: RegisterPayload) =>
     request<RegisterResponse>("/auth/register", {
@@ -62,6 +95,74 @@ export const AuthAPI = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  logout: () => authorizedRequest<{ message: string }>("/auth/logout", { method: "POST" }),
+};
+
+// Property types and API
+export interface PropertyCreate {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  area_sqft: number;
+  description?: string | null;
+}
+
+export interface PropertyResponse {
+  id: number;
+  owner_id: number;
+  status: string;
+  created_at: string;
+  updated_at?: string | null;
+  // keep minimal; extend if needed
+}
+
+export interface PropertyOwnerItem {
+  id: number;
+  name: string;
+  city: string;
+  state: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  area_sqft: number;
+}
+
+export interface PropertyPublicItem {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  area_sqft: number;
+  description?: string | null;
+}
+
+export const PropertyAPI = {
+  create: (payload: PropertyCreate) =>
+    authorizedRequest<PropertyResponse>("/properties/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  listMine: () => authorizedRequest<PropertyOwnerItem[]>("/properties/mine", { method: "GET" }),
+  listPublic: (params?: { city?: string; max_price?: number; skip?: number; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.city) sp.set("city", params.city);
+    if (typeof params?.max_price === "number") sp.set("max_price", String(params.max_price));
+    if (typeof params?.skip === "number") sp.set("skip", String(params.skip));
+    if (typeof params?.limit === "number") sp.set("limit", String(params.limit));
+    const q = sp.toString();
+    const path = q ? `/properties?${q}` : "/properties";
+    return request<PropertyPublicItem[]>(path, { method: "GET" });
+  },
+  getMine: (id: number) => authorizedRequest<PropertyOwnerDetail>(`/properties/${id}/mine`, { method: "GET" }),
 };
 
 export default AuthAPI;

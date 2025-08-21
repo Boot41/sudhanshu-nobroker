@@ -122,6 +122,35 @@ class PropertyPublic(BaseModel):
     area_sqft: int
     description: Optional[str] = None
 
+class PropertyOwnerItem(BaseModel):
+    # Minimal owner-facing list item (id and key fields)
+    id: int
+    name: str
+    city: str
+    state: str
+    price: float
+    bedrooms: int
+    bathrooms: int
+    area_sqft: int
+
+class PropertyOwnerDetail(BaseModel):
+    # Full owner-facing property details (unmasked address and metadata)
+    id: int
+    name: str
+    address: str
+    city: str
+    state: str
+    pincode: str
+    price: float
+    bedrooms: int
+    bathrooms: int
+    area_sqft: int
+    description: Optional[str] = None
+    status: PropertyStatus
+    owner_id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
 # Application Schemas
 class ApplicationResponse(BaseModel):
     id: int

@@ -14,6 +14,8 @@ from server.schemas.schema import (
     PropertySearchQuery,
     PropertyDeleteResponse,
     PropertyPublic,
+    PropertyOwnerItem,
+    PropertyOwnerDetail,
 )
 from server.services.property_service import PropertyService
 from server.models.model import User
@@ -72,6 +74,58 @@ def search_properties(
         )
         for p in props
     ]
+
+@property_router.get("/mine", response_model=List[PropertyOwnerItem])
+def get_my_properties(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return properties listed by the current owner."""
+    props = PropertyService.get_properties_by_owner(db=db, owner_id=current_user.id)
+    return [
+        PropertyOwnerItem(
+            id=p.id,
+            name=p.name,
+            city=p.city,
+            state=p.state,
+            price=p.price,
+            bedrooms=p.bedrooms,
+            bathrooms=p.bathrooms,
+            area_sqft=p.area_sqft,
+        )
+        for p in props
+    ]
+
+@property_router.get("/{property_id}/mine", response_model=PropertyOwnerDetail)
+def get_my_property_details(
+    property_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return full details for a property owned by the current user (unmasked)."""
+    p = PropertyService.get_property_by_id(db=db, property_id=property_id)
+    if p.owner_id != current_user.id:
+        # Hide whether the property exists if not owner
+        from fastapi import HTTPException
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can view only your own properties")
+
+    return PropertyOwnerDetail(
+        id=p.id,
+        name=p.name,
+        address=p.address,
+        city=p.city,
+        state=p.state,
+        pincode=p.pincode,
+        price=p.price,
+        bedrooms=p.bedrooms,
+        bathrooms=p.bathrooms,
+        area_sqft=p.area_sqft,
+        description=p.description,
+        status=p.status,
+        owner_id=p.owner_id,
+        created_at=p.created_at,
+        updated_at=p.updated_at,
+    )
 
 @property_router.get("/{property_id}", response_model=PropertyPublic)
 def get_property_details(

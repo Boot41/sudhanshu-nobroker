@@ -114,6 +114,17 @@ class AuthStore {
   logout() {
     this.set({ token: null, user: null, error: null });
   }
+
+  async logoutAsync() {
+    try {
+      // Best-effort server-side logout (for future revocation/audit). Ignore errors.
+      await AuthAPI.logout();
+    } catch {
+      // noop
+    } finally {
+      this.logout();
+    }
+  }
 }
 
 export const authStore = new AuthStore();

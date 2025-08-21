@@ -34,6 +34,17 @@ class PropertyService:
         return db.query(Property).offset(skip).limit(limit).all()
 
     @staticmethod
+    def get_properties_by_owner(db: Session, owner_id: int, skip: int = 0, limit: int = 100) -> List[Property]:
+        """Retrieve properties owned by the specified user (owner)."""
+        return (
+            db.query(Property)
+            .filter(Property.owner_id == owner_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
     def search_properties(
         db: Session,
         city: str | None = None,

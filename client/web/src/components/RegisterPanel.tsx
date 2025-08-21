@@ -63,13 +63,16 @@ const RegisterPanel: React.FC<RegisterPanelProps> = ({
     try {
       setLocalLoginError(undefined);
       setLocalLoginSubmitting(true);
-      const token = await authStore.login({
+      await authStore.login({
         email: vals.email,
         password: vals.password,
       });
       toast.success("Logged in successfully");
-      // TODO: persist token if needed (e.g., localStorage)
-      console.log("token", token);
+      // Navigate to owner dashboard after successful login
+      if (typeof window !== "undefined") {
+        // Keep it simple since we don't use a router: switch pathname
+        window.location.assign("/owner");
+      }
     } catch (e: any) {
       setLocalLoginError(e?.message || "Login failed");
     } finally {

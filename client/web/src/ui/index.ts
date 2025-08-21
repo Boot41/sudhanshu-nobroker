@@ -118,3 +118,16 @@ export type { InlineProps } from "./Inline";
 
 // Utilities
 export { toast } from "./toast";
+
+// Layout and containers
+export { Panel } from "./Panel";
+export type { PanelProps } from "./Panel";
+
+export { SidebarContainer, SidebarItem } from "./Sidebar";
+export type { SidebarContainerProps, SidebarItemProps } from "./Sidebar";
+
+export { Grid } from "./Grid";
+export type { GridProps } from "./Grid";
+
+export { AppShell } from "./AppShell";
+export type { AppShellProps } from "./AppShell";
