@@ -25,6 +25,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from server.db.database import Base  # noqa: E402
+from server.models import model as models  # noqa: F401,E402  ensure models are imported so tables are registered
 
 # Create a dedicated test engine (separate from app's SessionLocal)
 engine = create_engine(
@@ -33,7 +34,7 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create all tables once for the test database
+# Create all tables once for the test database (models imported above register tables)
 Base.metadata.create_all(bind=engine)
 
 
