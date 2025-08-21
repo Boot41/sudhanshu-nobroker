@@ -108,8 +108,8 @@ const EditProperty: React.FC = () => {
 
   return (
     <AppShell sidebar={<OwnerSidebar selected={tab} onSelect={(t) => { userClicked.current = true; setTab(t); }} />}>
-      <Stack gap="lg">
-        <Inline align="center" style={{ justifyContent: "space-between" }}>
+      <Stack  gap="lg">
+        <Inline align="center" style={{ justifyContent: "center" }}>
           <Stack gap="xs">
             <Text size="2xl" weight={700}>Edit Property</Text>
             <Text color="neutral-600">Update one or more fields and save</Text>
@@ -162,7 +162,7 @@ const EditProperty: React.FC = () => {
                 <Input id="price" type="number" placeholder={String(current.price)} value={price} onChange={(e) => setPrice(e.target.value)} />
               </Stack>
 
-              <Inline gap="md" wrap>
+              <Inline style={{margin: "0 auto"}} gap="md" wrap>
                 <Stack gap="xs">
                   <Label htmlFor="bedrooms">Bedrooms</Label>
                   <Input id="bedrooms" type="number" placeholder={String(current.bedrooms)} value={bedrooms} onChange={(e) => setBedrooms(e.target.value)} />
