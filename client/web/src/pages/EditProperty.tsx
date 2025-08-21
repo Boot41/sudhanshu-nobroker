@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell, Stack, Text, Input, Textarea, Button, Inline, Label, Spinner } from "../ui";
 import OwnerSidebar from "../components/owner/OwnerSidebar";
 import type { OwnerTab } from "../components/owner/OwnerSidebar";
@@ -10,6 +10,7 @@ const EditProperty: React.FC = () => {
   const [id, setId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const userClicked = useRef(false);
 
   // Form state: all optional
   const [name, setName] = useState("");
@@ -86,8 +87,14 @@ const EditProperty: React.FC = () => {
     }
   };
 
-  // Sidebar actions consistency across pages
+  // Sidebar actions: do not trigger on initial mount
+  const didMount = useRef(false);
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    if (!userClicked.current) return; // only navigate when user explicitly clicked sidebar
     if (tab === "logout") {
       (async () => {
         await authStore.logoutAsync();
@@ -96,10 +103,11 @@ const EditProperty: React.FC = () => {
     } else if (tab === "properties") {
       if (typeof window !== "undefined") window.location.assign("/owner");
     }
+    userClicked.current = false; // reset after handling
   }, [tab]);
 
   return (
-    <AppShell sidebar={<OwnerSidebar selected={tab} onSelect={setTab} />}>
+    <AppShell sidebar={<OwnerSidebar selected={tab} onSelect={(t) => { userClicked.current = true; setTab(t); }} />}>
       <Stack gap="lg">
         <Inline align="center" style={{ justifyContent: "space-between" }}>
           <Stack gap="xs">
