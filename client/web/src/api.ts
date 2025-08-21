@@ -11,6 +11,19 @@ export interface RegisterPayload {
   user_type: "tenant" | "owner";
 }
 
+export interface PropertyUpdate {
+  name?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  price?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  area_sqft?: number;
+  description?: string | null;
+}
+
 export interface PropertyOwnerDetail {
   id: number;
   name: string;
@@ -145,6 +158,11 @@ export interface PropertyPublicItem {
   description?: string | null;
 }
 
+export interface PropertyDeleteResponse {
+  id: number;
+  message: string;
+}
+
 export const PropertyAPI = {
   create: (payload: PropertyCreate) =>
     authorizedRequest<PropertyResponse>("/properties/", {
@@ -163,6 +181,15 @@ export const PropertyAPI = {
     return request<PropertyPublicItem[]>(path, { method: "GET" });
   },
   getMine: (id: number) => authorizedRequest<PropertyOwnerDetail>(`/properties/${id}/mine`, { method: "GET" }),
+  update: (id: number, updates: PropertyUpdate) =>
+    authorizedRequest<PropertyResponse>(`/properties/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(updates),
+    }),
+  remove: (id: number) =>
+    authorizedRequest<PropertyDeleteResponse>(`/properties/${id}`, {
+      method: "DELETE",
+    }),
 };
 
 export default AuthAPI;

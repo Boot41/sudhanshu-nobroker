@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppShell, Stack, Text, Spinner, Button } from "../ui";
+import { AppShell, Stack, Text, Spinner, Button, Inline } from "../ui";
 import OwnerSidebar from "../components/owner/OwnerSidebar";
 import type { OwnerTab } from "../components/owner/OwnerSidebar";
 import PropertyDetails from "../components/owner/PropertyDetails";
@@ -59,15 +59,59 @@ const PropertyView: React.FC = () => {
       });
   }, [ready, id]);
 
+  // Sidebar actions consistency
+  useEffect(() => {
+    if (tab === "logout") {
+      (async () => {
+        await authStore.logoutAsync();
+        if (typeof window !== "undefined") window.location.assign("/home");
+      })();
+    } else if (tab === "properties") {
+      if (typeof window !== "undefined") window.location.assign("/owner");
+    }
+  }, [tab]);
+
   // keep detail from local state synced via subscription
 
   return (
     <AppShell sidebar={<OwnerSidebar selected={tab} onSelect={setTab} />}>
       <Stack gap="lg">
-        <Stack gap="xs">
-          <Text size="2xl" weight={700}>Property Details</Text>
-          <Text color="neutral-600">View all information for this property</Text>
-        </Stack>
+        <Inline align="center" style={{ justifyContent: "space-between" }}>
+          <Stack gap="xs">
+            <Text size="2xl" weight={700}>Property Details</Text>
+            <Text color="neutral-600">View all information for this property</Text>
+          </Stack>
+          {!loading && !error && detail && (
+            <Inline gap="sm" wrap={false}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (typeof window !== "undefined" && id) {
+                    window.location.assign(`/owner/property/${id}/edit`);
+                  }
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                onClick={async () => {
+                  if (!id) return;
+                  const ok = typeof window === "undefined" ? false : window.confirm("Are you sure you want to remove this property?");
+                  if (!ok) return;
+                  try {
+                    await propertyStore.deleteProperty(id);
+                    if (typeof window !== "undefined") window.location.assign("/owner");
+                  } catch (e: any) {
+                    setError(e?.message || "Failed to remove property");
+                  }
+                }}
+              >
+                Remove
+              </Button>
+            </Inline>
+          )}
+        </Inline>
         {loading && (
           <Stack gap="sm" style={{ alignItems: "center" }}>
             <Spinner />

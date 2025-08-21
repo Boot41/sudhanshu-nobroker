@@ -7,6 +7,7 @@ import Home from './pages/Home.tsx'
 import OwnerDashboard from './pages/OwnerDashboard.tsx'
 import PostProperty from './pages/PostProperty.tsx'
 import PropertyView from './pages/PropertyView.tsx'
+import EditProperty from './pages/EditProperty.tsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -17,6 +18,7 @@ function App() {
     if (path === '/sample') return <Sample />
     if (path === '/owner') return <OwnerDashboard />
     if (path === '/owner/post') return <PostProperty />
+    if (path.startsWith('/owner/property/') && path.endsWith('/edit')) return <EditProperty />
     if (path.startsWith('/owner/property/')) return <PropertyView />
   }
 

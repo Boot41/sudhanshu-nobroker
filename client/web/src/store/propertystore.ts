@@ -89,6 +89,37 @@ class PropertyStore {
       throw new Error(msg);
     }
   }
+
+  async updateProperty(id: number, updates: Partial<PropertyOwnerDetail>): Promise<void> {
+    // Only send fields allowed by API update type
+    const payload: any = {
+      name: updates.name,
+      address: updates.address,
+      city: updates.city,
+      state: updates.state,
+      pincode: updates.pincode,
+      price: updates.price,
+      bedrooms: updates.bedrooms,
+      bathrooms: updates.bathrooms,
+      area_sqft: updates.area_sqft,
+      description: updates.description,
+    };
+    await PropertyAPI.update(id, payload);
+    // Refresh current and lists
+    try { await this.fetchMineById(id); } catch {}
+    try { await this.fetchMy(); } catch {}
+    try { await this.fetchPublic(); } catch {}
+  }
+
+  async deleteProperty(id: number): Promise<void> {
+    await PropertyAPI.remove(id);
+    // Remove from local lists
+    const nextMy = (this.state.my || []).filter((p) => p.id !== id);
+    const nextPublic = (this.state.publicList || []).filter((p: any) => p.id !== id);
+    const next: Partial<PropertyState> = { my: nextMy, publicList: nextPublic };
+    if (this.state.current && this.state.current.id === id) next.current = null;
+    this.set(next as PropertyState);
+  }
 }
 
 export const propertyStore = new PropertyStore();
