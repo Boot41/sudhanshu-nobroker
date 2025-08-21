@@ -25,7 +25,7 @@ const DisplayCarousel: React.FC<DisplayCarouselProps> = ({
   slides,
   autoAdvanceMs = 5000,
   height = "100vh",
-  width = "75%",
+  width = "100%",
   padding = "var(--spacing-3xl)",
   onSlideChange,
 }) => {
