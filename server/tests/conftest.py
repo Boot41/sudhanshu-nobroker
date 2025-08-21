@@ -52,6 +52,12 @@ def db_session() -> Generator[Session, None, None]:
 @pytest.fixture(scope="session")
 def app():
     """Import and return the FastAPI app."""
+    # Inject a dummy path_setup module to satisfy server.main import without editing app code
+    import types
+    import sys as _sys
+    if "path_setup" not in _sys.modules:
+        _sys.modules["path_setup"] = types.ModuleType("path_setup")
+
     from server.main import app as fastapi_app  # import after env is set
     return fastapi_app
 
