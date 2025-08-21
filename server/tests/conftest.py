@@ -4,6 +4,8 @@ Fixtures for DB/app/auth overrides will be added next.
 """
 
 import os
+import sys
+from pathlib import Path
 import pytest
 from typing import Generator
 
@@ -16,6 +18,11 @@ TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test_db.sqlite3"
 
 # Ensure the main app picks this up when it constructs its engine on import
 os.environ.setdefault("DATABASE_URL", TEST_DATABASE_URL)
+
+# Ensure repo root is on sys.path so 'import server.*' works when running from server/
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from server.db.database import Base  # noqa: E402
 
