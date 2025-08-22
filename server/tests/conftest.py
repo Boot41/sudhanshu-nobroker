@@ -24,6 +24,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+# Also ensure the 'server/' directory itself is on sys.path so tests can import
+# local packages directly (e.g., `from schemas.schema import ...`).
+SERVER_DIR = Path(__file__).resolve().parents[1]
+if str(SERVER_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVER_DIR))
+
 from server.db.database import Base  # noqa: E402
 from server.models import model as models  # noqa: F401,E402  ensure models are imported so tables are registered
 

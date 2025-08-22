@@ -1,0 +1,33 @@
+# Do not send secrets or heavy/dev artifacts in build context
+
+# Env files
+*.env
+**/.env
+**/.env.local
+**/.env.production
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+**/.venv/
+
+# Node
+**/node_modules/
+**/dist/
+**/.next/
+**/.nuxt/
+**/.cache/
+
+# VCS
+.git
+.gitignore
+
+# OS/editor
+.DS_Store
+*.swp
+*.swo
