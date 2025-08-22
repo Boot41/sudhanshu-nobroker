@@ -1,5 +1,5 @@
 # Database configuration (contains sensitive credentials)
-config.py
+
 
 # Environment files
 .env

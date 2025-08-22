@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: nb-pg
+    environment:
+      POSTGRES_USER: nb
+      POSTGRES_PASSWORD: nb
+      POSTGRES_DB: nb
+    ports:
+      - "5433:5432"
+    volumes:
+      - nb-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nb -d nb || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./client/web:/app
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && pnpm dev --host"
+    ports:
+      - "5174:5173"
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    image: nobroker-app
+    container_name: nobroker
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - server/.env
+    environment:
+      # If you prefer explicit URL instead of DB_* parts, uncomment the next line
+      # DATABASE_URL: postgresql+psycopg2://nb:nb@db:5432/nb
+      PYTHONPATH: /app
+      STATIC_FILES_DIR: /app/server/static
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+volumes:
+  nb-pgdata:
